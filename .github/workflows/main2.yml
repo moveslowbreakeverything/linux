@@ -1,0 +1,24 @@
+name: Build Linux Kernel
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libncurses-dev flex bison openssl libssl-dev libelf-dev
+
+      - name: Build kernel (default config)
+        run: |
+          make defconfig
+          make -j$(nproc)
