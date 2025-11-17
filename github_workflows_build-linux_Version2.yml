@@ -1,0 +1,43 @@
+name: Build Linux Kernel
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libncurses-dev bison flex libssl-dev libelf-dev bc
+
+      - name: Configure kernel (defconfig)
+        run: |
+          make defconfig
+
+      - name: Build kernel
+        run: |
+          make -j$(nproc)
+
+      - name: Package build artifacts
+        run: |
+          mkdir -p kernel-artifact
+          cp arch/x86/boot/bzImage kernel-artifact/ || true
+          cp .config kernel-artifact/ || true
+          cp vmlinux kernel-artifact/ || true
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: kernel-build
+          path: kernel-artifact/
