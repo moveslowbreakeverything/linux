@@ -1,0 +1,10 @@
+name: linux-build-env
+channels:
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  # Add other dependencies below, e.g.:
+  # - numpy
+  # - gcc
+  # - make
